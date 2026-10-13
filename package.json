@@ -2,7 +2,7 @@
   "name": "webpack-template",
   "version": "1.0.0",
   "main": "src/index.tsx",
-  "homepage": "https://matveygrevtsov.github.io/webpack-template/",
+  "homepage": "https://matveygrevtsov.github.io/itp_frontend/",
   "scripts": {
     "build": "npx webpack --mode production",
     "start": "npx webpack server",
