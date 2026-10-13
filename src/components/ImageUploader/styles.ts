@@ -78,15 +78,31 @@ export const ImageGrid = styled.div`
   margin-top: 32px;
 `;
 
-export const ImageCard = styled.div`
+export const ImageCard = styled.div<{
+  isDragging?: boolean;
+  isDropTarget?: boolean;
+}>`
   position: relative;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  cursor: grab;
+  opacity: ${props => props.isDragging ? 0.4 : 1};
+  outline: ${props => props.isDropTarget ? '2px solid #3b82f6' : 'none'};
+  outline-offset: 2px;
   
   &:hover {
     transform: translateY(-2px);
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
   }
 `;
 
@@ -95,6 +111,79 @@ export const ImagePreview = styled.img`
   height: 120px;
   object-fit: cover;
   display: block;
+  pointer-events: none;
+`;
+
+export const ImageOrderBadge = styled.div`
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+`;
+
+export const ImageControls = styled.div`
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+`;
+
+export const OrderButton = styled.button`
+  background: rgba(59, 130, 246, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  width: 28px;
+  height: 24px;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    background: rgba(59, 130, 246, 0.6);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+`;
+
+export const RemoveButton = styled.button`
+  background: rgba(239, 68, 68, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 6px;
+  width: 28px;
+  height: 24px;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.6);
+  }
+`;
+
+export const ReorderHint = styled.div`
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 20px;
 `;
 
 export const ImageName = styled.div`

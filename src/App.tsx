@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { ImageUploader } from './components/ImageUploader/index';
+import { UploadedImage } from './types/images';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -94,10 +95,12 @@ const Footer = styled.footer`
 `;
 
 export const App = () => {
-  const handleImagesUploaded = (images: any[]) => {
-    console.log('Все загруженные изображения:', images);
-    console.log('Готово к отправке на бэкенд для конвертации в PDF');
-  };
+  const handleImagesUploaded = useCallback((images: UploadedImage[]) => {
+    console.log(
+      'Текущий порядок изображений для PDF:',
+      images.map((image, index) => `${index + 1}. ${image.name}`),
+    );
+  }, []);
 
   return (
     <>
@@ -108,11 +111,11 @@ export const App = () => {
         <InfoBox>
           <h3>ℹ️ Как это работает?</h3>
           <ul>
-            <li>Перетащите изображения в зону загрузки или нажмите "Выбрать файлы"</li>
+            <li>Перетащите изображения в зону загрузки или нажмите «Выбрать файлы»</li>
             <li>Поддерживаются форматы: PNG, JPG, JPEG</li>
-            <li>Загруженные изображения выводятся в консоль браузера</li>
+            <li>Порядок карточек задаёт порядок страниц в PDF</li>
+            <li>Меняйте порядок перетаскиванием карточек или кнопками ← →</li>
             <li>В будущем они будут отправлены на бэкенд для конвертации в PDF</li>
-            <li>Можно загружать несколько изображений одновременно</li>
           </ul>
         </InfoBox>
         
