@@ -35,7 +35,7 @@ module.exports = (env, arg) => ({
     static: {
       directory: OUTPUT_FOLDER_NAME,
     },
-    port: 3000,
+    port: 3001,
     historyApiFallback: true,
     compress: true,
   },
