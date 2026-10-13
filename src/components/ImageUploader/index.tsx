@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { UploadedImage } from '../../types/images';
+import { convertImagesToPdf, downloadPdf } from '../../api/imagesToPdf';
 import { reorder } from '../../utils/reorder';
 import {
   Container,
@@ -17,7 +18,11 @@ import {
   OrderButton,
   RemoveButton,
   ReorderHint,
+  ActionsRow,
+  ConvertButton,
   ClearButton,
+  ErrorMessage,
+  SuccessMessage,
   LoadingText,
   UploadStats,
   Header,
@@ -34,6 +39,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesUploaded }
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  // Состояние отправки изображений на бэкенд и результат конвертации
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   // Индекс перетаскиваемой карточки и индекс позиции, куда она будет вставлена
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
@@ -50,6 +59,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesUploaded }
   // т.к. порядок определяет последовательность страниц в итоговом PDF
   useEffect(() => {
     onImagesUploadedRef.current?.(uploadedImages);
+  }, [uploadedImages]);
+
+  // Изменение списка изображений сбрасывает результат прошлой конвертации
+  useEffect(() => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
   }, [uploadedImages]);
 
   const validateImages = (files: FileList): File[] => {
@@ -143,6 +158,27 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesUploaded }
     });
     console.log('Все изображения удалены');
   }, []);
+
+  // Отправляет изображения на бэкенд и сохраняет полученный PDF
+  const handleConvert = useCallback(async () => {
+    if (uploadedImages.length === 0 || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const pdfBlob = await convertImagesToPdf(uploadedImages);
+      downloadPdf(pdfBlob);
+      setSuccessMessage('PDF успешно создан и сохранён');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Произошла неизвестная ошибка';
+      console.error('Ошибка конвертации изображений в PDF:', error);
+      setErrorMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [uploadedImages, isSubmitting]);
 
   const removeImage = useCallback((id: string) => {
     setUploadedImages(prev => {
@@ -248,7 +284,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesUploaded }
           <small>Поддерживаемые форматы: .png, .jpg, .jpeg</small>
         </UploadText>
         
-        <BrowseButton onClick={handleBrowseClick}>
+        <BrowseButton onClick={handleBrowseClick} disabled={isSubmitting}>
           Выбрать файлы
         </BrowseButton>
         
@@ -330,9 +366,26 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesUploaded }
             ))}
           </ImageGrid>
           
-          <ClearButton onClick={clearImages} disabled={isLoading}>
-            Очистить все изображения
-          </ClearButton>
+          <ActionsRow>
+            <ConvertButton
+              type="button"
+              onClick={handleConvert}
+              disabled={isSubmitting || isLoading || uploadedImages.length === 0}
+            >
+              {isSubmitting ? 'Конвертация...' : 'Конвертировать в PDF'}
+            </ConvertButton>
+
+            <ClearButton
+              type="button"
+              onClick={clearImages}
+              disabled={isLoading || isSubmitting}
+            >
+              Очистить все изображения
+            </ClearButton>
+          </ActionsRow>
+
+          {errorMessage && <ErrorMessage role="alert">{errorMessage}</ErrorMessage>}
+          {successMessage && <SuccessMessage role="status">{successMessage}</SuccessMessage>}
         </>
       )}
     </Container>

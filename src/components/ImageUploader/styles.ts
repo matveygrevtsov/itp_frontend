@@ -197,6 +197,35 @@ export const ImageName = styled.div`
   text-overflow: ellipsis;
 `;
 
+export const ActionsRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+export const ConvertButton = styled.button`
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    background: #15803d;
+  }
+  
+  &:disabled {
+    background: #6b7280;
+    cursor: not-allowed;
+  }
+`;
+
 export const ClearButton = styled.button`
   background: #ef4444;
   color: white;
@@ -207,9 +236,8 @@ export const ClearButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease;
-  margin-top: 20px;
   
-  &:hover {
+  &:hover:not(:disabled) {
     background: #dc2626;
   }
   
@@ -217,6 +245,20 @@ export const ClearButton = styled.button`
     background: #6b7280;
     cursor: not-allowed;
   }
+`;
+
+export const ErrorMessage = styled.div`
+  color: #f87171;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 16px;
+`;
+
+export const SuccessMessage = styled.div`
+  color: #4ade80;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 16px;
 `;
 
 export const LoadingText = styled.div`
